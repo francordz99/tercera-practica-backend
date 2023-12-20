@@ -144,7 +144,7 @@
                 if (response.ok) {
                     alert(data.message);
                 } else {
-                    alert(data.error);
+                    alert('Error al agregar el producto al carrito, Revisa que el producto no sea de los que tu creaste si eres usuario Premium');
                 }
             } catch (error) {
                 console.error(error);

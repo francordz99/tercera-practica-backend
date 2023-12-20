@@ -18,7 +18,8 @@ const config = {
     },
     nodemailer: {
         gmaccount: process.env.GMAIL_ACC,
-        gmpassword: process.env.GMAIL_PASS
+        gmpassword: process.env.GMAIL_PASS,
+        gmrecoverytoken: process.env.GMAIL_RECOVERY_TOKEN
     },
     nodemode: {
         env: process.env.NODE_ENV,

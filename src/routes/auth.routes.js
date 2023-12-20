@@ -18,5 +18,12 @@ authRoutes.post('/login', authController.login);
 
 authRoutes.get('/logout', authController.logout);
 
+// Resetear Contraseña
+
+authRoutes.get('/resetPassword', authController.getResetPassword);
+authRoutes.post('/resetPassword', authController.resetPassword);
+authRoutes.get('/resetPasswordStepTwo', authController.getStepTwo);
+authRoutes.post('/resetPasswordStepTwo', authController.postStepTwo);
+
 export default authRoutes;
 

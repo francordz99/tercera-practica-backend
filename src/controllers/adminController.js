@@ -1,6 +1,8 @@
 import Product from "../dao/models/productModel.js";
 import User from "../dao/models/userModel.js";
+import jwt from 'jsonwebtoken';
 import { adminErrors } from "../services/errors/adminErrors.js";
+import { config } from "../config/dotenvConfig.js";
 import { logger } from "../helpers/loggerConfig.js";
 
 const adminController = {
@@ -95,24 +97,35 @@ const adminController = {
     editPermissions: async (req, res) => {
         try {
             const { email, permissionLevel } = req.body;
+            const token = req.cookies.token;
+            const decodedToken = jwt.verify(token, config.jwt.jwtSecret);
+            const adminEmail = decodedToken.username;
+            if (email === adminEmail) {
+                logger.warn('Intento de cambiar el rol del propio administrador');
+                return res.status(403).send('No puedes cambiar tu propio rol.');
+            }
             const user = await User.findOne({ email: email });
-
             if (!user) {
                 logger.error('Usuario no encontrado');
                 return res.status(404).send('Usuario no encontrado.');
             }
+            const validRoles = ['user', 'premium', 'admin'];
+            if (!validRoles.includes(permissionLevel)) {
+                logger.error('Rol de permisos no válido');
+                return res.status(400).send('Rol de permisos no válido.');
+            }
             user.role = permissionLevel;
             await user.save();
-
             const successMessage = 'Permisos actualizados con éxito.';
             logger.info(successMessage);
             res.render('admin', { successMessage });
-
         } catch (error) {
             logger.error(`Error en editPermissions: ${error}`);
             adminErrors.editPermissionsError(error);
         }
     }
+
+
 };
 
 export default adminController;

@@ -14,9 +14,16 @@ const cartController = {
             const token = req.cookies.token;
             const decodedToken = jwt.verify(token, config.jwt.jwtSecret);
             const userEmail = decodedToken.username;
+            const product = await Product.findById(productId);
+            console.log(product);
+            if (!product) {
+                return res.status(404).json({ message: 'Producto no encontrado' });
+            }
+            if (product.owner === userEmail) {
+                return res.status(403).json({ message: 'No puedes agregar tu propio producto al carrito' });
+            }
             const cart = await Cart.findOne({ email: userEmail });
             const existingProductIndex = cart.products.findIndex(item => item.product.toString() === productId);
-
             if (existingProductIndex !== -1) {
                 cart.products[existingProductIndex].quantity += 1;
             } else {
@@ -30,6 +37,7 @@ const cartController = {
             cartErrors.addProductToCartError();
         }
     },
+
     getCartProducts: async (req, res) => {
         try {
             const token = req.cookies.token;
